@@ -127,7 +127,8 @@ async def get_areas():
     Надо вернуть список всех площадок с в формате
     return {"list" : [{"ID0" : address0}, {"ID1" : address1},..]} 
     """
-    pass
+    return {"list" : [{"ID0" : "address0"}, {"ID1" : "address1"}, {"ID2" : "address2"}]} 
+
 
 @app.get("/get_manufacturer")
 async def get_manufacturer():
@@ -135,7 +136,7 @@ async def get_manufacturer():
     Надо вернуть список всех производителей в формате
     return {"list" : [manufacturer0, manufacturer1,..]} 
     """
-    pass
+    return {"list" : ["manufacturer0", "manufacturer1"] }
 
 
 @app.get("/generate_maf_for_id_cost_manuf")
