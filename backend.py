@@ -1,4 +1,7 @@
 import pandas as pd
+import xml.etree.ElementTree as ET
+import os
+
 
 class Playground:
     __private_square = 0
@@ -62,6 +65,68 @@ class Playground:
         selected_mafs = self.small_elements(maf_array, self.__private_square, target_cost)
         numbers = [item['№ по номенклатуре'] for item in selected_mafs.values()]
         return numbers
+   
+    def get_manufacturer(self):
+        suppliers = self.dfe['Поставщик МАФ'].unique()
+        result = {"list": suppliers.tolist()}
+        return result
+    
+    def get_areas(self):
+        address_id_pairs = []
+        for index, row in self.df.iterrows():
+            address_id_pairs.append({"ID": str(row['АСУ ОДС Идентификатор']), "Адрес": row['Адрес']})
+        result = {"list": address_id_pairs}
+        return result
+    
+    def upload_mafs(self):
+        xmls_path = os.path.join(os.path.dirname(__file__), "data_set", "Каталог 2024 23.05.2024", "МАФ 2024")
+    
+        mafs = []
+
+        if not os.path.exists(xmls_path):
+            print(f"Directory does not exist: {xmls_path}")
+            return {"error": "Directory does not exist"}
+
+        for filename in os.listdir(xmls_path):
+            if filename.endswith(".xml"):
+                file_path = os.path.join(xmls_path, filename)
+                try:
+                    tree = ET.parse(file_path)
+                    root = tree.getroot()
+
+                    if root.tag == 'Catalog':
+                        vendor_code = root.find('vendorCode')
+                        price = root.find('price')
+                        name = root.find('name')
+                        provider = root.find('provider')
+                        image = root.find('image')
+                        dimensions = root.find('dimensions')
+
+                        if vendor_code is not None and price is not None and name is not None and provider is not None and image is not None and dimensions is not None:
+                            maf = {
+                                "ID": vendor_code.text,
+                                "Cost": float(price.text),
+                                "Name": name.text,
+                                "Provider": provider.text,
+                                "ImagePath": image.text,
+                                "Dimensions": dimensions.text
+                            }
+                            mafs.append(maf)
+                            # print(f"Appended MAF: {maf}")
+                        else:
+                            print(f"Missing elements in {file_path}")
+
+                    else:
+                        print(f"Unexpected root tag in {file_path}: {root.tag}")
+
+                except ET.ParseError as e:
+                    print(f"Error parsing {file_path}: {e}")
+                except Exception as e:
+                    print(f"Unexpected error: {e}")
+        
+        return {"list" : mafs}
+
+
 
         
 
