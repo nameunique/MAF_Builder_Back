@@ -1,7 +1,7 @@
 
 import os
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
@@ -20,8 +20,9 @@ pg = Playground(path_areas, path_catalog_maf)
 app = FastAPI()
 
 origins = [
-    "http://localhost:8080",
-    "http://127.0.0.1:8080"
+    "*",
+    # "http://localhost:8080",
+    # "http://127.0.0.1:8080"
 ]
 
 app.add_middleware(
@@ -63,7 +64,7 @@ async def responce_image():
 
 @app.get("/upload_mafs")
 async def upload_mafs():
-    result = pg.upload_mafs
+    result = pg.upload_mafs()
     return result
   
 @app.get("/get_maf_image")
@@ -90,10 +91,11 @@ async def get_manufacturer():
     return result
 
 @app.get("/generate_maf_for_id_cost_manuf")
-async def generate_maf_for_id_cost_manuf(cost : float, manufacturer : str, id_area : str):
+async def generate_maf_for_id_cost_manuf(cost : float, manufacturer : str, id_area : int):
     """
     Надо вернуть список ID-шников МАФов
     """
+
     id_maf = pg.get_area_cost(id_area, cost, manufacturer)
     return {"list" : id_maf}
 

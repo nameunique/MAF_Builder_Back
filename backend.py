@@ -35,7 +35,7 @@ class Playground:
                 except ValueError:
                     print(f"Ошибка при преобразовании размеров: {maf_array[i]['Габаритные размеры']}")  
         
-        maf_array.sort(key = lambda item: item['Габаритные размеры'])
+        # maf_array.sort(key = lambda item: item['Габаритные размеры']) # doesnt work as well, need to check it deeper
         return maf_array
 
         
@@ -59,7 +59,7 @@ class Playground:
         
         return selected_mafs    
     
-    def get_area_cost(self, ID_area, target_cost, manufacturer):
+    def get_area_cost(self, ID_area, target_cost, manufacturer : str):
         self.get_area(ID_area)
         maf_array = self.get_maf(manufacturer)
         selected_mafs = self.small_elements(maf_array, self.__private_square, target_cost)
@@ -74,7 +74,7 @@ class Playground:
     def get_areas(self):
         address_id_pairs = []
         for index, row in self.df.iterrows():
-            address_id_pairs.append({"ID": str(row['АСУ ОДС Идентификатор']), "Адрес": row['Адрес']})
+            address_id_pairs.append({"ID": str(row['АСУ ОДС Идентификатор']), "Address": row['Адрес']})
         result = {"list": address_id_pairs}
         return result
     
